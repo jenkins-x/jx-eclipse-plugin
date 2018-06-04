@@ -121,7 +121,7 @@
     <dependency>
 	  <groupId>io.jenkins-x.client</groupId>
 	  <artifactId>jx-java-client</artifactId>
-	  <version>1.0-SNAPSHOT</version>
+	  <version>1.0.0</version>
     </dependency>
   </dependencies>
 </project>
