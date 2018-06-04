@@ -1,9 +1,12 @@
 package io.jenkins.x.eclipse.plugin.view;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.inject.Inject;
 
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IContributionManager;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -25,11 +28,17 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
+import io.jenkins.x.client.ServiceClient;
+import io.jenkins.x.client.model.Jenkins;
+import io.jenkins.x.client.tree.BranchNode;
 import io.jenkins.x.client.tree.BuildNode;
+import io.jenkins.x.client.tree.OwnerNode;
 import io.jenkins.x.client.tree.PipelineTreeModel;
+import io.jenkins.x.client.tree.RepoNode;
 import io.jenkins.x.client.tree.TreeItem;
 import io.jenkins.x.client.tree.TreeModelListenerAdapter;
 import io.jenkins.x.eclipse.plugin.Logger;
+import io.jenkins.x.eclipse.plugin.Startup;
 import io.jenkins.x.eclipse.plugin.util.ActionUtils;
 
 /**
@@ -157,6 +166,40 @@ public class JenkinsView extends ViewPart {
 			ActionUtils.addOpenBrowseAction(manager, buildLogsUrl, "Logs");
 			ActionUtils.addOpenBrowseAction(manager, buildUrl, "Build");
 			ActionUtils.addOpenBrowseAction(manager, gitUrl, "Git Repo");
+		} else if(ele instanceof BranchNode) {
+			BranchNode branchNode = (BranchNode) ele;
+			
+			String branch = branchNode.getBranch();
+			TreeItem parent = branchNode.getParent();
+			if(parent instanceof RepoNode) {
+				RepoNode repoNode = (RepoNode) parent;
+				OwnerNode ownerNode = (OwnerNode) repoNode.getParent();
+				
+				String repo = repoNode.getLabel();
+				String owner = ownerNode.getLabel();
+				
+				Jenkins jenkins = Startup.getJenkins();
+				String url = jenkins.getUrl();
+				String user = jenkins.getUsername();
+				String passwd = jenkins.getPassword();
+				
+				manager.add(new BeAction() {
+
+					@Override
+					public void run() {
+						try {
+							com.surenpi.jenkins.client.Jenkins js =
+									new com.surenpi.jenkins.client.Jenkins(new URI(url), user, passwd);
+							
+							js.getJobs().build(owner, repo, branch);
+						} catch (URISyntaxException e) {
+							e.printStackTrace();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				});
+			}
 		}
 	}
 

@@ -123,5 +123,11 @@
 	  <artifactId>jx-java-client</artifactId>
 	  <version>1.0-SNAPSHOT</version>
     </dependency>
+    
+	<dependency>
+	    <groupId>com.surenpi.ci</groupId>
+	    <artifactId>jenkins.client.java</artifactId>
+	    <version>1.0.1-20180202-SNAPSHOT</version>
+	</dependency>
   </dependencies>
 </project>
