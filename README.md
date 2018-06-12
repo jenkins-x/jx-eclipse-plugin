@@ -8,3 +8,7 @@
 ### Build
 
 Before you get to running this plugin, you need run `make` first.
+
+### Install
+
+You can add url `https://surenpi.gitee.io/jx-eclipse-plugin-site/` to `Available Software Sites`, then install this plugin.
